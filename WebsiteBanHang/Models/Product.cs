@@ -21,13 +21,13 @@ namespace WebsiteBanHang.Models
 
         public Category? Category { get; set; }
 
-        [Column(TypeName ="decimal(8,2)")]
+        [Column(TypeName ="decimal(18,2)")]
         public decimal? ProductPrice { get; set; }
 
         [Column(TypeName = "decimal(2,2)")]
         public decimal? ProductDiscount { get; set;}
 
-        [StringLength(100)]
+        
         public string? ProductImage { get; set; }
 
         [ForeignKey("Color")]

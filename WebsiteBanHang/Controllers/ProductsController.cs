@@ -18,6 +18,27 @@ namespace WebsiteBanHang.Controllers
         {
             _context = context;
         }
+        private async Task<string> SaveImage(IFormFile image)
+        {
+            // Ensure the folder exists
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "Ảnh xe");
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            // Construct the full path for saving the image
+            var savePath = Path.Combine(folderPath, image.FileName);
+
+            // Save the image to the specified path
+            using (var fileStream = new FileStream(savePath, FileMode.Create))
+            {
+                await image.CopyToAsync(fileStream);
+            }
+
+            // Return the relative URL to the saved image
+            return "/img/Ảnh xe/" + image.FileName;
+        }
 
         // GET: Products
         public async Task<IActionResult> Index()
@@ -166,5 +187,7 @@ namespace WebsiteBanHang.Controllers
         {
             return _context.Products.Any(e => e.ProductId == id);
         }
+        
+
     }
 }
