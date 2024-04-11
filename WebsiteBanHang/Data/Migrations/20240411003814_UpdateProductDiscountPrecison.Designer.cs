@@ -12,8 +12,8 @@ using WebsiteBanHang.Data;
 namespace WebsiteBanHang.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240410102628_Initial")]
-    partial class Initial
+    [Migration("20240411003814_UpdateProductDiscountPrecison")]
+    partial class UpdateProductDiscountPrecison
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -298,8 +298,7 @@ namespace WebsiteBanHang.Data.Migrations
                         .HasColumnType("decimal(2,2)");
 
                     b.Property<string>("ProductImage")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -307,7 +306,7 @@ namespace WebsiteBanHang.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal?>("ProductPrice")
-                        .HasColumnType("decimal(8,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ProductId");
 

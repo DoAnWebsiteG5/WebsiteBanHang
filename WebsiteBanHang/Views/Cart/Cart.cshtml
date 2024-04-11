@@ -23,8 +23,8 @@
                     {
 
                         <tr>
-                            <td class="align-middle"><img src="img/product-1.jpg" alt="" style="width: 50px;"> @line.Product.ProductName</td>
-                            <td class="align-middle">@line.Product.ProductPrice Vnđ</td>
+                            <td class="align-middle"><img src="@line.Product.ProductImage" alt="" style="width: 50px;"> @line.Product.ProductName</td>
+                            <td class="align-middle">@(line.Product.ProductPrice*(1-line.Product.ProductDiscount)) Vnđ</td>
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
@@ -40,7 +40,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle">$@(line.Product.ProductPrice*line.Quantity)</td>
+                            <td class="align-middle">@(line.Product.ProductPrice * (1 - line.Product.ProductDiscount) *line.Quantity) Vnđ</td>
                             <td class="align-middle">
                                 <a href="/Cart/RemoveFromCart/?productId=@line.Product.ProductId" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></a>
 
@@ -78,7 +78,7 @@
                             <h5 class="font-weight-bold">Total</h5>
                             <h5 class="font-weight-bold">@(Model?.ComputeTotalValue() + 10) Vnđ</h5>
                         </div>
-                        <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                        <a href="/Checkout/Checkout" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</a>
                     </div>
                 </div>
             </div>

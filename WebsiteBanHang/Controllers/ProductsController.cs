@@ -18,7 +18,7 @@ namespace WebsiteBanHang.Controllers
         {
             _context = context;
         }
-        private async Task<string> SaveImage(IFormFile image)
+        /*private async Task<string> SaveImage(IFormFile image)
         {
             // Ensure the folder exists
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "Ảnh xe");
@@ -37,6 +37,15 @@ namespace WebsiteBanHang.Controllers
             }
 
             // Return the relative URL to the saved image
+            return "/img/Ảnh xe/" + image.FileName;
+        }*/
+        private async Task<string> SaveImage(IFormFile image)
+        {
+            var savePath = Path.Combine("wwwroot/img/Ảnh xe", image.FileName);
+            using (var fileStream = new FileStream(savePath, FileMode.Create))
+            {
+                await image.CopyToAsync(fileStream);
+            }
             return "/img/Ảnh xe/" + image.FileName;
         }
 
@@ -80,10 +89,14 @@ namespace WebsiteBanHang.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,ProductDescription,CategoryId,ProductPrice,ProductDiscount,ProductImage,ColorId,IsTrandy,IsArrived")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,ProductName,ProductDescription,CategoryId,ProductPrice,ProductDiscount,ProductImage,ColorId,IsTrandy,IsArrived")] Product product, IFormFile productImage)
         {
             if (ModelState.IsValid)
             {
+                if (productImage != null)
+                {
+                    product.ProductImage = await SaveImage(productImage);
+                }
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -116,7 +129,7 @@ namespace WebsiteBanHang.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,ProductDescription,CategoryId,ProductPrice,ProductDiscount,ProductImage,ColorId,IsTrandy,IsArrived")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,ProductDescription,CategoryId,ProductPrice,ProductDiscount,ProductImage,ColorId,IsTrandy,IsArrived")] Product product, IFormFile productImage)
         {
             if (id != product.ProductId)
             {
@@ -125,6 +138,10 @@ namespace WebsiteBanHang.Controllers
 
             if (ModelState.IsValid)
             {
+                if (productImage != null)
+                {
+                    product.ProductImage = await SaveImage(productImage);
+                }
                 try
                 {
                     _context.Update(product);

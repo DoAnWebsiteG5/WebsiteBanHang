@@ -35,7 +35,7 @@ namespace WebsiteBanHang.Data.Migrations
                     ProductDescription = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     ProductPrice = table.Column<decimal>(type: "decimal(8,2)", nullable: true),
-                    ProductDiscount = table.Column<decimal>(type: "decimal(2,2)", nullable: true),
+                    ProductDiscount = table.Column<decimal>(type: "decimal(8,2)", nullable: true),
                     ProductImage = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     IsTrandy = table.Column<bool>(type: "bit", nullable: false),
                     IsArrived = table.Column<bool>(type: "bit", nullable: false)

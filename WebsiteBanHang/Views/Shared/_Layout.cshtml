@@ -81,10 +81,8 @@
                     <i class="fas fa-heart text-primary"></i>
                     <span class="badge">0</span>
                 </a>
-                <a href="" class="btn border">
-                    <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
-                </a>
+                @await Component.InvokeAsync("CartWidget")
+                
             </div>
         </div>
     </div>
@@ -209,7 +207,8 @@
     <!-- Products Start -->
     @RenderBody()
 
-    
+
+
     <!-- Footer Start -->
     <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
         <div class="row px-xl-5 pt-5">
