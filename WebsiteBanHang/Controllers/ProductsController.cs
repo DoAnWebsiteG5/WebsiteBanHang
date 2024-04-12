@@ -2,43 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Data;
 using WebsiteBanHang.Models;
+using WebsiteBanHang.Models.ViewModels;
 
 namespace WebsiteBanHang.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        public int PageSize = 2;
         public ProductsController(ApplicationDbContext context)
         {
             _context = context;
         }
-        /*private async Task<string> SaveImage(IFormFile image)
-        {
-            // Ensure the folder exists
-            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "Ảnh xe");
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
 
-            // Construct the full path for saving the image
-            var savePath = Path.Combine(folderPath, image.FileName);
-
-            // Save the image to the specified path
-            using (var fileStream = new FileStream(savePath, FileMode.Create))
-            {
-                await image.CopyToAsync(fileStream);
-            }
-
-            // Return the relative URL to the saved image
-            return "/img/Ảnh xe/" + image.FileName;
-        }*/
+        [Authorize]
         private async Task<string> SaveImage(IFormFile image)
         {
             var savePath = Path.Combine("wwwroot/img/Ảnh xe", image.FileName);
@@ -50,13 +33,56 @@ namespace WebsiteBanHang.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int productPage =1)
         {
-            var applicationDbContext = _context.Products.Include(p => p.Category).Include(p => p.Color);
-            return View(await applicationDbContext.ToListAsync());
+          
+            return View(
+                new ProductListViewModel
+                {
+                    Products =_context.Products
+                    .Skip((productPage-1)*PageSize)
+                    .Take(PageSize),
+                    PagingInfo = new PagingInfo
+                    {
+                        ItemsPerPage = PageSize,
+                        CurrentPage = productPage,
+                        TotalItems =_context.Products.Count()
+                    }
+                }
+
+                );
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Search(string keywords, int productPage = 1)
+        {
+
+            return View("Index",
+                new ProductListViewModel
+                {
+                    Products = _context.Products
+                    .Where(p=>p.ProductName.Contains(keywords))
+                    .Skip((productPage - 1) * PageSize)
+                    .Take(PageSize),
+                    PagingInfo = new PagingInfo
+                    {
+                        ItemsPerPage = PageSize,
+                        CurrentPage = productPage,
+                        TotalItems = _context.Products.Count()
+                    }
+                }
+
+                );
+        }
+
+        public async Task<IActionResult> ProductsByCart(int categoryId)
+        {
+            var applicationDbContext = _context.Products.Where(p=>p.CategoryId== categoryId).Include(p => p.Category).Include(p => p.Color);
+            return View("Index", await applicationDbContext.ToListAsync());
         }
 
         // GET: Products/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -77,10 +103,11 @@ namespace WebsiteBanHang.Controllers
         }
 
         // GET: Products/Create
+        [Authorize]
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId");
-            ViewData["ColorId"] = new SelectList(_context.Set<Color>(), "ColorId", "ColorId");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
+            ViewData["ColorId"] = new SelectList(_context.Set<Color>(), "ColorId", "ColorName");
             return View();
         }
 
@@ -89,6 +116,7 @@ namespace WebsiteBanHang.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("ProductId,ProductName,ProductDescription,CategoryId,ProductPrice,ProductDiscount,ProductImage,ColorId,IsTrandy,IsArrived")] Product product, IFormFile productImage)
         {
             if (ModelState.IsValid)
@@ -101,12 +129,13 @@ namespace WebsiteBanHang.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
-            ViewData["ColorId"] = new SelectList(_context.Set<Color>(), "ColorId", "ColorId", product.ColorId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
+            ViewData["ColorId"] = new SelectList(_context.Set<Color>(), "ColorId", "ColorName", product.ColorId);
             return View(product);
         }
 
         // GET: Products/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -119,8 +148,8 @@ namespace WebsiteBanHang.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
-            ViewData["ColorId"] = new SelectList(_context.Set<Color>(), "ColorId", "ColorId", product.ColorId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
+            ViewData["ColorId"] = new SelectList(_context.Set<Color>(), "ColorId", "ColorName", product.ColorId);
             return View(product);
         }
 
@@ -129,6 +158,7 @@ namespace WebsiteBanHang.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,ProductDescription,CategoryId,ProductPrice,ProductDiscount,ProductImage,ColorId,IsTrandy,IsArrived")] Product product, IFormFile productImage)
         {
             if (id != product.ProductId)
@@ -160,12 +190,13 @@ namespace WebsiteBanHang.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
-            ViewData["ColorId"] = new SelectList(_context.Set<Color>(), "ColorId", "ColorId", product.ColorId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
+            ViewData["ColorId"] = new SelectList(_context.Set<Color>(), "ColorId", "ColorName", product.ColorId);
             return View(product);
         }
 
         // GET: Products/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -188,6 +219,7 @@ namespace WebsiteBanHang.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Products.FindAsync(id);
