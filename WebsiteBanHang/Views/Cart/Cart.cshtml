@@ -10,11 +10,11 @@
                 <table class="table table-bordered text-center mb-0">
                     <thead class="bg-secondary text-dark">
                         <tr>
-                            <th>Products</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Remove</th>
+                            <th>Sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th>Tổng tiền</th>
+                            <th>Xóa</th>
                         </tr>
                     </thead>
                     <tbody class="align-middle">
@@ -40,7 +40,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle">@(line.Product.ProductPrice * (1 - line.Product.ProductDiscount) *line.Quantity) Vnđ</td>
+                            <td class="align-middle">@(line.Product.ProductPrice * (1 - line.Product.ProductDiscount) * line.Quantity) VNĐ</td>
                             <td class="align-middle">
                                 <a href="/Cart/RemoveFromCart/?productId=@line.Product.ProductId" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></a>
 
@@ -53,32 +53,32 @@
             <div class="col-lg-4">
                 <form class="mb-5" action="">
                     <div class="input-group">
-                        <input type="text" class="form-control p-4" placeholder="Coupon Code">
+                        <input type="text" class="form-control p-4" placeholder="Mã giảm giá">
                         <div class="input-group-append">
-                            <button class="btn btn-primary">Apply Coupon</button>
+                            <button class="btn btn-primary">Áp dụng mã</button>
                         </div>
                     </div>
                 </form>
                 <div class="card border-secondary mb-5">
                     <div class="card-header bg-secondary border-0">
-                        <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
+                        <h4 class="font-weight-semi-bold m-0">Giỏ hàng</h4>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-3 pt-1">
-                            <h6 class="font-weight-medium">Subtotal</h6>
-                            <h6 class="font-weight-medium">@Model?.ComputeTotalValue() Vnđ</h6>
+                            <h6 class="font-weight-medium">Tạm tính</h6>
+                        <h6 class="font-weight-medium">@Model?.ComputeTotalValue() VNĐ</h6>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                        <h6 class="font-weight-medium">@(Model?.ComputeTotalValue() * 10 / 100) Vnđ</h6>
+                            <h6 class="font-weight-medium">Phí vận chuyện</h6>
+                        <h6 class="font-weight-medium">@(Model?.ComputeTotalValue() * 3 / 1000) VNĐ</h6>
                         </div>
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
-                            <h5 class="font-weight-bold">Total</h5>
-                        <h5 class="font-weight-bold">@(Model?.ComputeTotalValue() + (Model?.ComputeTotalValue() * 10 / 100)) Vnđ</h5>
+                            <h5 class="font-weight-bold">Tổng</h5>
+                        <h5 class="font-weight-bold">@(Model?.ComputeTotalValue() + (Model?.ComputeTotalValue() * 3 / 1000)) VNĐ</h5>
                         </div>
-                        <a href="/Checkout/Checkout" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</a>
+                        <a href="/Checkout/Checkout" class="btn btn-block btn-primary my-3 py-3">Xác nhận đơn hàng</a>
                     </div>
                 </div>
             </div>
